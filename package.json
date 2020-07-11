@@ -1,0 +1,29 @@
+{
+  "name": "mapapp",
+  "version": "1.0.0",
+  "description": "Social Application to find the best local places",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "start:prod": "NODE_ENV=production nodemon server.js"
+  },
+  "author": "Anna Burkat",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "mongoose": "^5.9.21",
+    "morgan": "^1.10.0",
+    "npkill": "^0.7.1",
+    "path": "^0.12.7",
+    "win-node-env": "^0.4.0",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  }
+}
