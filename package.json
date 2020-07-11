@@ -17,6 +17,8 @@
     "morgan": "^1.10.0",
     "npkill": "^0.7.1",
     "path": "^0.12.7",
+    "slugify": "^1.4.4",
+    "validator": "^13.1.1",
     "win-node-env": "^0.4.0",
     "winston": "^3.3.3"
   },

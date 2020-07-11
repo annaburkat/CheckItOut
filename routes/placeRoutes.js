@@ -14,6 +14,10 @@ router
   .route('/place-stats')
   .get(getPlaceStats);
 
+// router
+//   .route('/monthly-plan/:year')
+//   .get(getMonthlyPlan);
+
 router
   .route('/')
   .get(getAllPlaces)

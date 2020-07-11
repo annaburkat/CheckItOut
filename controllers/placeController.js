@@ -228,7 +228,7 @@ exports.getPlaceStats = async (req, res) => {
     const stats = await Place.aggregate([{
         $match: {
           ratingsAverage: {
-            $gte: 5
+            $gte: 1
           }
         }
       },
@@ -263,13 +263,13 @@ exports.getPlaceStats = async (req, res) => {
         $sort: {
           avgPrice: -1
         }
-      },
-      {
-        //exclude some data
-        $match: {
-          _id: {$ne: 'CAFE'}
-        }
       }
+      // {
+      //   //exclude some data
+      //   $match: {
+      //     _id: {$ne: 'CAFE'}
+      //   }
+      // }
     ]);
 
     res.status(200).json({
@@ -286,6 +286,76 @@ exports.getPlaceStats = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
+
+
+
+
+
+// //Filter data by places open per month
+// exports.getMonthlyPlan = async (req, res) => {
+//   try {
+//     const year = parseInt(req.params.year); // 2021
+//
+//     const plan = await Place.aggregate([
+//       {
+//         $unwind: '$startDates'
+//       },
+//       {
+//         //select document - do query
+//         $match: {
+//           startDates: {
+//             $gte: new Date(`${year}-01-01`),
+//             $lte: new Date(`${year}-12-31`),
+//           }
+//         }
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             month: '$startDates'
+//           },
+//           numberPlacesStarts: {
+//             $sum: 1
+//           },
+//           tours: {
+//             $push: '$name'
+//           }
+//         }
+//       },
+//       {
+//         $addField: {
+//           month: '$_id'
+//         }
+//       },
+//       {
+//         $project: {
+//           _id: 0
+//         },
+//         $sort: {
+//           numberPlacesStarts: -1
+//         }
+//       }
+//     ]);
+//
+//     res.status(200).json({
+//       status: 'success',
+//       data: {
+//         plan
+//       }
+//     });
+//   } catch (err) {
+//     res.status(404).json({
+//       status: 'something went wrong',
+//       message: err
+//     });
+//   }
+// };
 
 
 
