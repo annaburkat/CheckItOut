@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 // const placeController = require('./../controllers/placeController.js');
-const {getAllPlaces, createPlace, getOnePlace, deletePlace, updatePlace, validatePlaceID, validateNewPlaceBody, aliasTopTours} = require('./../controllers/placeController.js');
+const {getAllPlaces, createPlace, getOnePlace, deletePlace, updatePlace, validatePlaceID, validateNewPlaceBody, aliasTopTours, getPlaceStats} = require('./../controllers/placeController.js');
 
 const router = express.Router();
 
@@ -9,6 +9,10 @@ const router = express.Router();
 router
   .route('/top-five-cheap')
   .get(aliasTopTours, getAllPlaces);
+
+router
+  .route('/place-stats')
+  .get(getPlaceStats);
 
 router
   .route('/')

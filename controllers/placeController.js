@@ -9,17 +9,20 @@ exports.aliasTopTours = (req, res, next) => {
   req.query.fields = 'name,price,ratingsAverage,summary,difficulties';
 
   next();
-}
+};
 
 class APIFeatures {
-  constructor(query, finalQuery) {
+  constructor(query, queryString) {
     this.query = query;
-    this.finalQuery = finalQuery;
+    this.queryString = queryString;
   }
 
+  // 1/ FILTERING
   filtering() {
     //  1A/ FILTERING
-    const queryObj = {...this.query};
+    const queryObj = {
+      ...this.queryString
+    };
     const ignoredFileds = ['sort', 'page', 'limit', 'fields'];
     ignoredFileds.forEach(x => delete queryObj[x]);
 
@@ -27,14 +30,53 @@ class APIFeatures {
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
 
-    this.query.find(queryStr);
+    this.query = this.query.find(JSON.parse(queryStr));
+
+    return this;
+  }
+
+  // 2/ SORTING
+  sorting() {
+    if (this.queryString.sort) {
+      const sortBy = this.queryString.sort.split(',').join(' ');
+      this.query = this.query.sort(sortBy)
+    } else {
+      // finalQuery = finalQuery.sort('name');
+      this.query = this.query.sort('-createdAt');
+    }
+    return this;
+  }
+  //
+  // 3. DATA LIMITING
+  limiting() {
+    if (this.queryString.fields) {
+      const fields = this.queryString.fields.split(',').join(' ');
+      this.query = this.query.select(fields);
+    } else {
+      //extra feature - not show some stuff
+      //createdAt hidden in model
+      this.query = this.query.select('-__v')
+    }
+    return this;
+  }
+  //
+  // 4. PAGINTION
+  paginating() {
+    const page = parseInt(this.queryString.page) || 1;
+    const limit = parseInt(this.queryString.limit) || 100;
+    const skip = (page - 1) * limit;
+
+    this.query = this.query.skip(skip).limit(limit);
+
+    return this;
   }
 }
+
 
 //Places
 exports.getAllPlaces = async (req, res) => {
   try {
-    //building query
+    // // building query
     // //  1A/ FILTERING
     // const queryObj = {...req.query};
     // const ignoredFileds = ['sort', 'page', 'limit', 'fields'];
@@ -45,43 +87,49 @@ exports.getAllPlaces = async (req, res) => {
     // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
     //
     // let finalQuery = Place.find(JSON.parse(queryStr));
+    //
+    // // 2/ SORTING
+    // if(req.query.sort) {
+    //   const sortBy = req.query.sort.split(',').join(' ');
+    //   finalQuery = finalQuery.sort(sortBy)
+    // } else {
+    //   finalQuery = finalQuery.sort('name');
+    //   // finalQuery = finalQuery.sort('-createdAt');
+    // };
+    //
+    // // 3. DATA LIMITING
+    // if(req.query.fields) {
+    //   const fields = req.query.fields.split(',').join(' ');
+    //   finalQuery = finalQuery.select(fields);
+    // } else {
+    //     //extra feature - not show some stuff
+    //     //createdAt hidden in model
+    //     finalQuery = finalQuery.select('-__v')
+    // };
+    //
+    // // 4. PAGINTION
+    // const page = parseInt(req.query.page) || 1;
+    // const limit = parseInt(req.query.limit) || 100;
+    // const skip =  (page - 1) * limit;
+    //
+    // finalQuery = finalQuery.skip(skip).limit(limit);
+    //
+    // if(req.query.page) {
+    //   const numberOfPlaces = await Place.countDocuments();
+    //   if(skip >= numberOfPlaces) {
+    //     throw new Error('This page does not exist');
+    //   }
+    // };
 
-    // 2/ SORTING
-    if(req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' ');
-      finalQuery = finalQuery.sort(sortBy)
-    } else {
-      finalQuery = finalQuery.sort('name');
-      // finalQuery = finalQuery.sort('-createdAt');
-    };
+    // execute query
+    const features = new APIFeatures(Place.find(), req.query)
+      // .filtering()
+      .sorting()
+      .limiting()
+      .paginating(0);
 
-    // 3. DATA LIMITING
-    if(req.query.fields) {
-      const fields = req.query.fields.split(',').join(' ');
-      finalQuery = finalQuery.select(fields);
-    } else {
-        //extra feature - not show some stuff
-        //createdAt hidden in model
-        finalQuery = finalQuery.select('-__v')
-    };
-
-    // 4. PAGINTION
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 100;
-    const skip =  (page - 1) * limit;
-
-    finalQuery = finalQuery.skip(skip).limit(limit);
-
-    if(req.query.page) {
-      const numberOfPlaces = await Place.countDocuments();
-      if(skip >= numberOfPlaces) {
-        throw new Error('This page does not exist');
-      }
-    };
-
-    //execute query
-    const features = new API;
-    const places = await finalQuery;
+    const places = await features.query;
+    // const places = await finalQuery;
 
     //send response
     res.status(200).json({
@@ -171,13 +219,72 @@ exports.deletePlace = async (req, res) => {
       status: 'fail',
       message: err
     });
-  };
+  }
 };
 
+exports.getPlaceStats = async (req, res) => {
+  try {
+    //mongodb feature - mongoose
+    const stats = await Place.aggregate([{
+        $match: {
+          ratingsAverage: {
+            $gte: 5
+          }
+        }
+      },
+      {
+        $group: {
+          // _id: null,
+          _id: {
+            $toUpper: "$category"
+          },
+          // _id: "$country",
+          numOfPlaces: {
+            $sum: 1
+          },
+          numOfRatings: {
+            $sum: '$ratingsQuantity'
+          },
+          avgRating: {
+            $avg: '$ratingsAverage'
+          },
+          avgPrice: {
+            $avg: '$averagePrice'
+          },
+          minPrice: {
+            $min: '$averagePrice'
+          },
+          maxPrice: {
+            $max: '$averagePrice'
+          }
+        }
+      },
+      {
+        $sort: {
+          avgPrice: -1
+        }
+      },
+      {
+        //exclude some data
+        $match: {
+          _id: {$ne: 'CAFE'}
+        }
+      }
+    ]);
 
-
-
-
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats
+      }
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'something went wrong',
+      message: err
+    });
+  }
+};
 
 
 
