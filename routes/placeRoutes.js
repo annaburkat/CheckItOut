@@ -24,7 +24,7 @@ router
   .post(createPlace);
 
 router
-  .route('/:placeID')
+  .route('/:id')
   .get(getOnePlace)
   .delete(deletePlace)
   .patch(updatePlace);

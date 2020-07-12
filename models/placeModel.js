@@ -11,6 +11,7 @@ const placeSchema = new mongoose.Schema({
       minlength: [1, 'The name is too short - it should be longer or equal 1 character but not longer than 100 characters']
       // validate: [validator.isAlpha, 'Place name should only contains characters']
     },
+    slug: String,
     category: {
       type: String,
       required: [true, "Please enter category"],
@@ -90,17 +91,16 @@ const placeSchema = new mongoose.Schema({
       default: Date.now(),
       select: false
     },
-    slug: String,
     secretPlace: {
       type: Boolean,
       default: false
     }
-  }
+  },
   // //options for schema
-  // {
-  //   toJSON: {virtual: true},
-  //   toObject: {virtual: true}
-  // }
+  {
+    toJSON: {virtual: true},
+    toObject: {virtual: true}
+  }
 );
 
 //when you want to have something in schema, which is coming from calculation like changing km to cm 103
