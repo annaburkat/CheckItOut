@@ -10,9 +10,11 @@
   "author": "Anna Burkat",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.21",
     "morgan": "^1.10.0",
     "npkill": "^0.7.1",

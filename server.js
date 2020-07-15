@@ -9,6 +9,7 @@ dotenv.config({
 //catch uncaught exception - what will happen?
 // https://nodejs.org/api/process.html#process_event_uncaughtexception
 process.on('uncaughtException', (err, origin) => {
+    console.log(err);
   fs.writeSync(
     process.stderr.fd,
     `Caught exception: ${err}\n |` +
@@ -35,7 +36,7 @@ mongoose.connect(database, {
     useFindAndModify: false,
     useUnifiedTopology: true
   })
-  .then(connection => console.log('connected'));
+  .then(connection => console.log('DB connection correct!'));
 // .catch(err => console.log('ERROR DB'));
 // }).then(connection =>  console.log(connection.connections));
 
@@ -64,6 +65,7 @@ const server = app.listen(port, () => {
 // });
 
 process.on('unhandledRejection', (err) => {
+
   console.log(err.message, err.name);
   console.log('Application will crush really soon. Bye!');
   // Application specific logging, throwing an error, or other logic here

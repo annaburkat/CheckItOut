@@ -1,7 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 // const placeController = require('./../controllers/placeController.js');
-const {getAllPlaces, createPlace, getOnePlace, deletePlace, updatePlace, validatePlaceID, validateNewPlaceBody, aliasTopTours, getPlaceStats} = require('./../controllers/placeController.js');
+const {getAllPlaces, createPlace, getOnePlace, deletePlace, updatePlace, validatePlaceID, validateNewPlaceBody, aliasTopTours, getPlaceStats} = require('./../controllers/placeController');
+const {protectRoutes} = require('./../controllers/authenticationController');
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router
 
 router
   .route('/')
-  .get(getAllPlaces)
+  .get(protectRoutes, getAllPlaces)
   .post(createPlace);
 
 router
