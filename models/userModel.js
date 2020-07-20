@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please enter a password'],
     //change to something bigger later
-    minlength: 5,
+    minlength: 3,
     select: false
   },
   passwordConfirm: {
@@ -36,7 +36,8 @@ const userSchema = new mongoose.Schema({
       },
       message: 'Passwords don\'t match'
     }
-  }
+  },
+  passwordChangedAt: Date
 });
 
 //encription password - middlware
@@ -52,10 +53,31 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
-//instance method
+//instance method - is a method which will be available every
 userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
   return await bcryptjs.compare(candidatePassword, userPassword);
-}
+};
+
+
+
+userSchema.methods.changedPasswordAfter = function(JWTTimeStamp) {
+  if(this.passwordChangedAt) {
+    const changedTimestamp = parseInt(this.passwordChangedAt.getTime()/1000);
+    console.log(changedTimestamp, JWTTimeStamp);
+    return JWTTimeStamp < changedTimestamp;
+  }
+
+  //FALSE mean not changed password
+  return false;
+};
+// userSchema.methods.changedPasswordAfter = function(JWTTimeStamp) {
+//   if (this.passwordChangedAt) {
+//     console.log('dupcia');
+//     // console.log(this.passwordChangedAt, JWTTimeStamp);
+//   }
+//
+//   return false;
+// }
 
 const User = mongoose.model('User', userSchema);
 

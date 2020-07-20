@@ -19,6 +19,18 @@ const handleValidationErrorDB = err => {
   return new AppError(message, 400);
 }
 
+const handleJWTErrors = (err) => {
+  const message = `Invalid token. Please try to log again or contact admin by sending email at admin@checkitout.com`;
+  //400 bad request
+  return new AppError(message, 401);
+}
+
+const handleJWTExpired = (err) => {
+  const message = `Sorry, your token has expired. Please log in again.`;
+  //400 bad request
+  return new AppError(message, 401);
+}
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -72,6 +84,16 @@ module.exports = (err, req, res, next) => {
 
     if (error.name === "ValidationError") {
       error = handleValidationErrorDB(error);
+    }
+
+    //wrong Token Handler
+    if (error.name === "JsonWebTokenError") {
+      error = handleJWTErrors(error);
+    }
+
+    //Expired Token Handler
+    if (error.name === "TokenExpiredError") {
+      error = handleJWTExpired(error);
     }
 
     sendErrorProd(error, res);

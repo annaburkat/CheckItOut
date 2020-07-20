@@ -1,4 +1,4 @@
-const {promisify} = require('util');
+const util = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
@@ -12,18 +12,20 @@ const generateJwtToken = (id) => {
   });
 }
 
+//signiup and automatically log in user
 exports.signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm
+    passwordConfirm: req.body.passwordConfirm,
+    passwordChangedAt: req.body.passwordChangedAt
   });
 
   const jwtToken = generateJwtToken(newUser._id);
 
   //send response
-  res.status(200).json({
+  res.status(201).json({
     status: 'success',
     jwtToken,
     data: {
@@ -46,26 +48,25 @@ exports.logIn = catchAsync(async (req, res, next) => {
     return next(new AppError('Please provide email', 400))
   }
 
-  //Check if user exist and if password is findOne
+  //Check if user exist and if password is correct
   const user = await User.findOne({
     email: email
   }).select('+password');
 
-  const isPassword = user ? await user.correctPassword(password, user.password) : null;
+  //correctPassword define in userModel
+  const isPasswordCorrect = user ? await user.correctPassword(password, user.password) : null;
 
-  if (!user) {
-    return next(new AppError('Incorrect email', 401))
+  if (!user || !isPasswordCorrect) {
+    return next(new AppError('Incorrect email or password', 401))
   }
-  if (!isPassword) {
-    return next(new AppError('Incorrect password', 401))
-  }
+
   //Check if everything is ok, send token to client
   const token = generateJwtToken(user._id);
 
   res.status(200).json({
     status: 'success',
     token,
-    message: 'All good user'
+    message: 'All good, you are logged in!'
   });
 });
 
@@ -74,6 +75,7 @@ exports.protectRoutes = catchAsync(async (req, res, next) => {
   let jwtToken;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     jwtToken = req.headers.authorization.split(' ')[1];
+    console.log('jwtToken', jwtToken);
   }
 
   if (!jwtToken) {
@@ -81,9 +83,25 @@ exports.protectRoutes = catchAsync(async (req, res, next) => {
   }
 
   //2 Validate jwtToken
-  // const decoded = await promisify(jwt.verify)(jwtToken, process.env.JWT_SECRET);
-  // console.log(decoded);
-  //3 Check if user exists
+  //verify is async function
+  //and then it will call back function
+  //we promisify this functi on
+  //check if code wasn't manipulated
+  const decoded = await util.promisify(jwt.verify)(jwtToken, process.env.JWT_SECRET);
+
+  //3 Check if user exists - if user wasn't deleted meanwhile
+  const userNow = await User.findById(decoded.id);
+  if (!userNow) {
+    return next(new AppError('The user belonging to this token does not exist. Please try log in again', 401));
+  }
+
   //4 Check if user changed password after jwtToken was issued
+  //instance method
+  if (userNow.changedPasswordAfter(decoded.iat)) {
+    return next(new AppError(`Password changed recenlty, please log in again`, 401));
+  };
+
+  //all good, serve website
+  req.user = userNow;
   next();
 });
