@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 // const placeController = require('./../controllers/placeController.js');
 const {getAllPlaces, createPlace, getOnePlace, deletePlace, updatePlace, validatePlaceID, validateNewPlaceBody, aliasTopTours, getPlaceStats} = require('./../controllers/placeController');
-const {protectRoutes} = require('./../controllers/authenticationController');
+const {protectRoutes, restrictRoutes} = require('./../controllers/authenticationController');
 
 const router = express.Router();
 
@@ -15,10 +15,6 @@ router
   .route('/place-stats')
   .get(getPlaceStats);
 
-// router
-//   .route('/monthly-plan/:year')
-//   .get(getMonthlyPlan);
-
 router
   .route('/')
   .get(protectRoutes, getAllPlaces)
@@ -27,7 +23,7 @@ router
 router
   .route('/:placeID')
   .get(getOnePlace)
-  .delete(deletePlace)
+  .delete(protectRoutes, restrictRoutes('admin', 'redactor'), deletePlace)
   .patch(updatePlace);
 
 module.exports = router;
