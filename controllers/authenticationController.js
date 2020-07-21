@@ -12,7 +12,22 @@ const generateJwtToken = (id) => {
   }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_DATE_EXPIRATION
   });
-}
+};
+
+const createAndSendToken = (user, statusCode, res) => {
+  console.log('grazynka')
+  const jwtToken = generateJwtToken(user._id);
+
+  //send response
+  res.status(statusCode).json({
+    status: 'success',
+    jwtToken,
+    data: {
+      user: user
+    }
+  });
+};
+
 
 //signiup and automatically log in user
 exports.signUp = catchAsync(async (req, res, next) => {
@@ -25,16 +40,17 @@ exports.signUp = catchAsync(async (req, res, next) => {
     role: req.body.role
   });
 
-  const jwtToken = generateJwtToken(newUser._id);
-
-  //send response
-  res.status(201).json({
-    status: 'success',
-    jwtToken,
-    data: {
-      user: newUser
-    }
-  });
+  createAndSendToken(newUser, 201, res);
+  // const jwtToken = generateJwtToken(newUser._id);
+  //
+  // //send response
+  // res.status(201).json({
+  //   status: 'success',
+  //   jwtToken,
+  //   data: {
+  //     user: newUser
+  //   }
+  // });
 });
 
 
@@ -65,13 +81,14 @@ exports.logIn = catchAsync(async (req, res, next) => {
   }
 
   //Check if everything is ok, send token to client
-  const jwtToken = generateJwtToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    jwtToken,
-    message: 'All good, you are logged in!'
-  });
+  createAndSendToken(user, 200, res);
+  // const jwtToken = generateJwtToken(user._id);
+  //
+  // res.status(200).json({
+  //   status: 'success',
+  //   jwtToken,
+  //   message: 'All good, you are logged in!'
+  // });
 });
 
 
@@ -85,7 +102,6 @@ exports.protectRoutes = catchAsync(async (req, res, next) => {
   }
 
   if (!jwtToken) {
-
     return next(new AppError('You are not logged in. Log in to get access.', 401));
   }
 
@@ -127,7 +143,6 @@ exports.restrictRoutes = (...roles) => {
 
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
-  console.log('forgotPassword');
   //I. Get user based on email
   const user = await User.findOne({
     email: req.body.email
@@ -175,7 +190,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 });
 
 
-exports.changePassword = catchAsync(async (req, res, next) => {
+exports.resetPassword = catchAsync(async (req, res, next) => {
   //I. Get user based on Token
   //twice the same code, might refactor to own funciton
   const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
@@ -200,13 +215,43 @@ exports.changePassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   //III. Update changed password at property for current users
-  const jwtToken = generateJwtToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    jwtToken,
-    message: 'All good, you are logged in!'
-  });
-
   //IV. Log user in
+  createAndSendToken(user, 200, res);
+  // const jwtToken = generateJwtToken(user._id);
+  //
+  // res.status(200).json({
+  //   status: 'success',
+  //   jwtToken,
+  //   message: 'All good, you are logged in!'
+  // });
+
+
+});
+
+
+exports.changePassword = catchAsync(async (req, res, next) => {
+  //I. Get user from db
+  const user = await User.findById(req.user.id).select('+password');
+
+  //II. Check if password is correct
+  const isPasswordCorrect = user ? await user.correctPassword(req.body.passwordNow, user.password) : null;
+
+  if(!isPasswordCorrect) {
+    return next(new AppError('Incorrect Password, please try again.', 401));
+  };
+
+  //III. Update password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+
+  // //IV. Log user in again
+  createAndSendToken(user, 200, res);
+  // const jwtToken = generateJwtToken(user._id);
+  //
+  // res.status(200).json({
+  //   status: 'success',
+  //   jwtToken,
+  //   message: 'All good, your password was changed.'
+  // });
 });

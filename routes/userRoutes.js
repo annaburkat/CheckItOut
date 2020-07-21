@@ -12,8 +12,10 @@ const {
 const {
   signUp,
   logIn,
+  resetPassword,
+  forgotPassword,
   changePassword,
-  forgotPassword
+  protectRoutes
 } = require('./../controllers/authenticationController.js');
 
 const router = express.Router();
@@ -24,9 +26,11 @@ router
   .post('/login', logIn)
 
 router
-  .post('/forgotPassword', forgotPassword)
+  .post('/forgotPassword', forgotPassword);
 router
-  .patch('/changePassword/:token', changePassword)
+  .patch('/resetPassword/:token', resetPassword);
+router
+  .patch('/changePassword', protectRoutes, changePassword);
 
 router
   .route('/')
