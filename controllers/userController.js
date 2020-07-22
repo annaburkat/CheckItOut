@@ -7,9 +7,18 @@ const users = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev/data/users.json`)
 );
 
+const filterObject = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach(el => {
+      if (allowedFields.includes(el)) {
+        newObj[el] = obj[el];
+    }
+  })
+return newObj;
+};
+
 //Users
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-
   const users = await User.find();
   // const places = await finalQuery;
 
@@ -43,20 +52,14 @@ exports.getOneUser = (req, res) => {
   });
 };
 
-exports.deleteUser = (req, res) => {
-  //check if such a user exist (users with given id)
-  if (parseInt(req.params.userID) > users.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'no such a user'
-    });
-  };
+exports.deleteLoggedUser = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, {active: false});
 
   res.status(204).json({
     status: 'success',
     data: null
   });
-};
+});
 
 exports.updateUser = (req, res) => {
   //check if such a user exist (users with given id)
@@ -74,6 +77,29 @@ exports.updateUser = (req, res) => {
     }
   });
 };
+
+//update user as an user
+exports.updateLoggedInUser = catchAsync(async (req, res, next) => {
+  //I. Create an error if user tries to update password
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(new AppError('Action forbiden! To change password go to www.checkitout.io/changePassword'));
+  };
+
+  //II. Filter out not wanted elements
+  const fillteredBody = filterObject(req.body, 'name', 'email');
+  //III. Update the user document
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, fillteredBody, {
+    new: true,
+    runValidators: true
+  });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: updatedUser
+    }
+  });
+});
 
 exports.addNewUser = (req, res) => {
   // console.log(req.body);

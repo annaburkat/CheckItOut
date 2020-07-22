@@ -5,8 +5,9 @@ const {
   getAllUsers,
   addNewUser,
   getOneUser,
-  deleteUser,
-  updateUser
+  updateUser,
+  updateLoggedInUser,
+  deleteLoggedUser
 } = require('./../controllers/userController.js');
 
 const {
@@ -31,6 +32,10 @@ router
   .patch('/resetPassword/:token', resetPassword);
 router
   .patch('/changePassword', protectRoutes, changePassword);
+router
+  .patch('/updateProfile', protectRoutes, updateLoggedInUser);
+router
+  .delete('/deleteProfile', protectRoutes, deleteLoggedUser);
 
 router
   .route('/')
@@ -40,7 +45,6 @@ router
 router
   .route('/:userID')
   .get(getOneUser)
-  .delete(deleteUser)
   .patch(updateUser);
 
 module.exports = router;

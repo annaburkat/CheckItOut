@@ -15,8 +15,20 @@ const generateJwtToken = (id) => {
 };
 
 const createAndSendToken = (user, statusCode, res) => {
-  console.log('grazynka')
   const jwtToken = generateJwtToken(user._id);
+  const cookieOptions =  {
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRATION * 24 * 3600000),
+    httpOnly: true
+  };
+
+  if(process.env.NODE_ENV === "production") {
+    cookieOptions.secure = true;
+  };
+
+//remove password from output
+user.password = undefined;
+
+  res.cookie('jwtToken', jwtToken, cookieOptions);
 
   //send response
   res.status(statusCode).json({
@@ -41,16 +53,6 @@ exports.signUp = catchAsync(async (req, res, next) => {
   });
 
   createAndSendToken(newUser, 201, res);
-  // const jwtToken = generateJwtToken(newUser._id);
-  //
-  // //send response
-  // res.status(201).json({
-  //   status: 'success',
-  //   jwtToken,
-  //   data: {
-  //     user: newUser
-  //   }
-  // });
 });
 
 
@@ -82,13 +84,6 @@ exports.logIn = catchAsync(async (req, res, next) => {
 
   //Check if everything is ok, send token to client
   createAndSendToken(user, 200, res);
-  // const jwtToken = generateJwtToken(user._id);
-  //
-  // res.status(200).json({
-  //   status: 'success',
-  //   jwtToken,
-  //   message: 'All good, you are logged in!'
-  // });
 });
 
 
@@ -217,15 +212,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   //III. Update changed password at property for current users
   //IV. Log user in
   createAndSendToken(user, 200, res);
-  // const jwtToken = generateJwtToken(user._id);
-  //
-  // res.status(200).json({
-  //   status: 'success',
-  //   jwtToken,
-  //   message: 'All good, you are logged in!'
-  // });
-
-
 });
 
 
@@ -247,11 +233,4 @@ exports.changePassword = catchAsync(async (req, res, next) => {
 
   // //IV. Log user in again
   createAndSendToken(user, 200, res);
-  // const jwtToken = generateJwtToken(user._id);
-  //
-  // res.status(200).json({
-  //   status: 'success',
-  //   jwtToken,
-  //   message: 'All good, your password was changed.'
-  // });
 });

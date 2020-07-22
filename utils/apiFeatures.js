@@ -25,6 +25,7 @@ class APIFeatures {
   // 2/ SORTING
   sorting() {
     if (this.queryString.sort) {
+      console.log(this.queryString.sort);
       const sortBy = this.queryString.sort.split(',').join(' ');
       this.query = this.query.sort(sortBy)
     } else {
@@ -33,7 +34,7 @@ class APIFeatures {
     }
     return this;
   }
-  //
+
   // 3. DATA LIMITING
   limiting() {
     if (this.queryString.fields) {
@@ -46,7 +47,7 @@ class APIFeatures {
     }
     return this;
   }
-  //
+
   // 4. PAGINTION
   paginating() {
     const page = parseInt(this.queryString.page) || 1;

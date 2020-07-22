@@ -45,7 +45,12 @@ const userSchema = new mongoose.Schema({
     default: 'user'
   },
   passwordResetToken: String,
-  passwordResetExpires: Date
+  passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false
+  }
 });
 
 
@@ -73,6 +78,13 @@ userSchema.pre('save', function(next){
 
 });
 
+userSchema.pre(/^find/, function(next){
+  // this points to the current query
+  //when someone is looking for user, show only those with active status
+  this.find({active: true});
+  next();
+});
+
 //instance method - is a method which will be available every
 userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
   return await bcryptjs.compare(candidatePassword, userPassword);
@@ -81,7 +93,7 @@ userSchema.methods.correctPassword = async function(candidatePassword, userPassw
 userSchema.methods.changedPasswordAfter = function(JWTTimeStamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000);
-    console.log(changedTimestamp, JWTTimeStamp);
+    // console.log(changedTimestamp, JWTTimeStamp);
     return JWTTimeStamp < changedTimestamp;
   }
 
@@ -98,8 +110,7 @@ userSchema.methods.createPasswordResetToken = function() {
   this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
   //adding extra time - for how long reset token will be valid
   this.passwordResetExpires = Date.now() + 300000;
-
-  console.log({resetToken},   this.passwordResetToken);
+  // console.log({resetToken},   this.passwordResetToken);
   return resetToken;
 };
 
