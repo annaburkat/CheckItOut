@@ -13,7 +13,6 @@ const AppError = require('./utils/AppError');
 const globalErrorHandler = require('./controllers/errorController');
 const placesRouter = require('./routes/placeRoutes');
 const usersRouter = require('./routes/userRoutes');
-const san = require('./routes/userRoutes');
 
 const app = express();
 

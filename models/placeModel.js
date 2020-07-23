@@ -19,17 +19,17 @@ const placeSchema = new mongoose.Schema({
         messages: 'You can add only: cinema, cafe, shop, restaurant, museum.'
       }
     },
-    country: {
-      type: String,
-      required: [true, "Please enter a country"]
-    },
-    city: {
-      type: String,
-      required: [true, "Please enter a city"]
-    },
-    address: {
-      type: String,
-      required: [true, "Please enter an address"]
+    location: {
+      //GeoJson
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point']
+      },
+      coordinates: [Number],
+      address: String,
+      city: String,
+      country: String
     },
     description: {
       type: String,
