@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
+// const User = require('./userModel');
 
 const placeSchema = new mongoose.Schema({
     name: {
@@ -56,8 +57,8 @@ const placeSchema = new mongoose.Schema({
     ratingsAverage: {
       type: Number,
       default: 5,
-      min:[1, 'Rating must be above 1 or equal'],
-      max:[10, 'Rating must be below or equal 10']
+      min: [1, 'Rating must be above 1 or equal'],
+      max: [10, 'Rating must be below or equal 10']
     },
     ratingsQuantity: {
       type: Number,
@@ -94,7 +95,12 @@ const placeSchema = new mongoose.Schema({
     secretPlace: {
       type: Boolean,
       default: false
-    }
+    },
+    // redactors: Array
+    redactors: [{
+      type: mongoose.Schema.ObjectId,
+      ref: 'User'
+    }]
   }
   // //options for schema
   // {
@@ -120,13 +126,11 @@ placeSchema.pre('save', function(next) {
   next();
 });
 
-// placeSchema.pre('save', function(next) {
-//   console.log('I am saved');
-//   next();
-// });
-//
-// placeSchema.post('save', function(doc, next) {
-//   console.log(doc);
+// //embeding REDACTORS
+// placeSchema.pre('save', async function(next) {
+//   //this = currently processed document
+//   const redactorPromises = this.redactors.map(async id=> await User.findById(id));
+//   this.redactors =  await Promise.all(redactorPromises);
 //   next();
 // });
 
@@ -154,11 +158,13 @@ placeSchema.pre('findOne', function(next) {
   next();
 });
 
-// placeSchema.post('find', function(docs, next) {
-//   console.log(`Query run for ${Date.now() - this.start}`);
-//   console.log(docs);
-//   next();
-// });
+placeSchema.pre(/^find/, function(next){
+  this.populate({
+    path: 'redactors',
+    select: '-__v'
+  });
+  next();
+});
 
 //AGGREGATION middlware
 placeSchema.pre('aggregate', function(next) {
@@ -171,7 +177,6 @@ placeSchema.pre('aggregate', function(next) {
       }
     }
   });
-  console.log(this.pipeline());
   next();
 });
 

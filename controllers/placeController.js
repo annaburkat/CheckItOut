@@ -37,12 +37,9 @@ exports.getAllPlaces = catchAsync(async (req, res, next) => {
 });
 
 exports.getOnePlace = catchAsync(async (req, res, next) => {
-  const place = await Place.findOne({
-    _id: req.params.placeID
-  })
-  // const place = await Place.findById(req.params.placeID)
+  const place = await Place.findById(req.params.placeID);
 
-  if(!place){
+  if (!place) {
     return next(new AppError('No place with that id', 404))
   }
 
@@ -70,7 +67,7 @@ exports.updatePlace = catchAsync(async (req, res, next) => {
     runValidators: true
   });
 
-  if(!updatedPlace){
+  if (!updatedPlace) {
     return next(new AppError('No place with that id', 404))
   }
 
@@ -85,7 +82,7 @@ exports.updatePlace = catchAsync(async (req, res, next) => {
 exports.deletePlace = catchAsync(async (req, res, next) => {
   const deletedPlace = await Place.findByIdAndDelete(req.params.placeID);
 
-  if(!deletedPlace){
+  if (!deletedPlace) {
     return next(new AppError('No place with that id', 404))
   }
 
