@@ -36,6 +36,7 @@ const placeSchema = new mongoose.Schema({
       type: String,
       trim: true
     },
+    slug: String,
     contact: {
       type: String
     },
@@ -91,7 +92,6 @@ const placeSchema = new mongoose.Schema({
       default: Date.now(),
       select: false
     },
-    slug: String,
     secretPlace: {
       type: Boolean,
       default: false
@@ -101,12 +101,16 @@ const placeSchema = new mongoose.Schema({
       type: mongoose.Schema.ObjectId,
       ref: 'User'
     }]
+  },
+  //options for schema
+  {
+    toJSON: {
+      virtuals: true
+    },
+    toObject: {
+      virtuals: true
+    }
   }
-  // //options for schema
-  // {
-  //   toJSON: {virtual: true},
-  //   toObject: {virtual: true}
-  // }
 );
 
 //when you want to have something in schema, which is coming from calculation like changing km to cm 103
@@ -114,6 +118,13 @@ const placeSchema = new mongoose.Schema({
 // placeSchema.virtual('durationWeeks').get(function(){
 //   return this.duration/7;
 // });
+
+//Virtual populate Place with Review
+placeSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'place',
+  localField: '_id'
+});
 
 //DOCUMENT Middlware/hook 104
 //It runs before save and create
@@ -158,7 +169,7 @@ placeSchema.pre('findOne', function(next) {
   next();
 });
 
-placeSchema.pre(/^find/, function(next){
+placeSchema.pre(/^find/, function(next) {
   this.populate({
     path: 'redactors',
     select: '-__v'

@@ -1,6 +1,6 @@
 const express = require('express');
 const fs = require('fs');
-// const placeController = require('./../controllers/userController.js');
+
 const {
   getAllUsers,
   addNewUser,
@@ -19,12 +19,13 @@ const {
   protectRoutes
 } = require('./../controllers/authenticationController.js');
 
+
 const router = express.Router();
 
 router
-  .post('/signup', signUp)
+  .post('/signup', signUp);
 router
-  .post('/login', logIn)
+  .post('/login', logIn);
 
 router
   .post('/forgotPassword', forgotPassword);
@@ -46,5 +47,6 @@ router
   .route('/:userID')
   .get(getOneUser)
   .patch(updateUser);
+
 
 module.exports = router;

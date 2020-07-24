@@ -37,11 +37,11 @@ exports.getAllPlaces = catchAsync(async (req, res, next) => {
 });
 
 exports.getOnePlace = catchAsync(async (req, res, next) => {
-  const place = await Place.findById(req.params.placeID);
 
+  const place = await Place.findById(req.params.placeID).populate('reviews');
   if (!place) {
     return next(new AppError('No place with that id', 404))
-  }
+  };
 
   res.status(200).json({
     status: 'success',
@@ -53,6 +53,7 @@ exports.getOnePlace = catchAsync(async (req, res, next) => {
 
 exports.createPlace = catchAsync(async (req, res, next) => {
   const newPlace = await Place.create(req.body);
+
   res.status(201).json({
     status: 'success',
     data: {

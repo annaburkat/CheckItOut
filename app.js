@@ -11,8 +11,9 @@ const hpp = require('hpp');
 
 const AppError = require('./utils/AppError');
 const globalErrorHandler = require('./controllers/errorController');
-const placesRouter = require('./routes/placeRoutes');
-const usersRouter = require('./routes/userRoutes');
+const placeRouter = require('./routes/placeRoutes');
+const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
 
@@ -66,8 +67,9 @@ app.use((req, res, next) => {
 });
 
 // Routes - mounting routers
-app.use('/api/v1/places', placesRouter);
-app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/places', placeRouter);
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 //catch all methodes
 app.all('*', (req, res, next) => {
