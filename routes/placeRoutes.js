@@ -1,6 +1,8 @@
 const express = require('express');
 // const fs = require('fs');
 // const placeController = require('./../controllers/placeController.js');
+const reviewRouter = require('./reviewRoutes.js');
+
 const {
   getAllPlaces,
   createPlace,
@@ -18,13 +20,11 @@ const {
   restrictRoutes
 } = require('./../controllers/authenticationController');
 
-const {
-  createReview
-} = require('./../controllers/reviewController.js');
 
 const router = express.Router();
 
-// router.param('placeID', validatePlaceID);
+router.use('/:placeID/reviews', reviewRouter);
+
 router
   .route('/top-five-cheap')
   .get(aliasTopTours, getAllPlaces);
@@ -39,14 +39,10 @@ router
   .post(createPlace);
 
 router
-  .route('/:placeID')
+  .route('/:id')
   .get(getOnePlace)
   .delete(protectRoutes, restrictRoutes('admin', 'redactor'), deletePlace)
   .patch(updatePlace);
-
-router
-  .route('/:placeID/reviews')
-  .post(protectRoutes, restrictRoutes('user'), createReview);
 
 
 module.exports = router;

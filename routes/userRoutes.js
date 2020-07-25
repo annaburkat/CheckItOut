@@ -44,8 +44,9 @@ router
   .post(addNewUser);
 
 router
-  .route('/:userID')
+  .route('/:id')
   .get(getOneUser)
+  .delete(deleteLoggedUser)
   .patch(updateUser);
 
 

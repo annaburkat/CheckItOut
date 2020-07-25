@@ -1,8 +1,9 @@
 const fs = require('fs');
 const Place = require('./../models/placeModel');
-const APIFeatures = require('./../utils/apiFeatures');
+// const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const functionsHandler = require('./functionsHandler');
 
 
 //concept of showing extra features on your website
@@ -15,85 +16,11 @@ exports.aliasTopTours = (req, res, next) => {
 };
 
 //Places
-exports.getAllPlaces = catchAsync(async (req, res, next) => {
-  // execute query
-  const features = new APIFeatures(Place.find(), req.query)
-    .filtering()
-    .sorting()
-    .limiting()
-    .paginating();
-
-  const places = await features.query;
-  // const places = await finalQuery;
-
-  //send response
-  res.status(200).json({
-    status: 'success',
-    results: places.length,
-    data: {
-      places
-    }
-  });
-});
-
-exports.getOnePlace = catchAsync(async (req, res, next) => {
-
-  const place = await Place.findById(req.params.placeID).populate('reviews');
-  if (!place) {
-    return next(new AppError('No place with that id', 404))
-  };
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      place
-    }
-  });
-});
-
-exports.createPlace = catchAsync(async (req, res, next) => {
-  const newPlace = await Place.create(req.body);
-
-  res.status(201).json({
-    status: 'success',
-    data: {
-      place: newPlace
-    }
-  });
-});
-
-exports.updatePlace = catchAsync(async (req, res, next) => {
-  const updatedPlace = await Place.findByIdAndUpdate(req.params.placeID, req.body, {
-    new: true,
-    runValidators: true
-  });
-
-  if (!updatedPlace) {
-    return next(new AppError('No place with that id', 404))
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      place: updatedPlace
-    }
-  });
-});
-
-exports.deletePlace = catchAsync(async (req, res, next) => {
-  const deletedPlace = await Place.findByIdAndDelete(req.params.placeID);
-
-  if (!deletedPlace) {
-    return next(new AppError('No place with that id', 404))
-  }
-
-  res.status(204).json({
-    status: 'success',
-    message: 'place successfully removed',
-    data: null
-  });
-});
-
+exports.getAllPlaces = functionsHandler.getAll(Place);
+exports.getOnePlace = functionsHandler.getOne(Place, {path: 'reviews'});
+exports.createPlace = functionsHandler.createOne(Place);
+exports.updatePlace = functionsHandler.updateOne(Place);
+exports.deletePlace = functionsHandler.deleteOne(Place);
 exports.getPlaceStats = catchAsync(async (req, res, next) => {
   //mongodb feature - mongoose
   const stats = await Place.aggregate([{

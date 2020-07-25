@@ -5,7 +5,8 @@ const {
   getOneReview,
   createReview,
   updateReview,
-  deleteReview
+  deleteReview,
+  setUserPlaceDetails
 } = require('./../controllers/reviewController');
 
 const {
@@ -13,28 +14,24 @@ const {
   restrictRoutes
 } = require('./../controllers/authenticationController');
 
-const router = express.Router();
+const router = express.Router({
+  mergeParams: true
+});
 
 router
   .route('/')
   .get(protectRoutes, getAllReviews)
-  .post(protectRoutes, restrictRoutes('user'), createReview);
-
-// router
-//   .route('/:reviewID')
-//   .get(getOneReview)
-//   .patch(updateReview)
-//   .delete(deleteReview);
+  .post(
+    protectRoutes,
+    restrictRoutes('user'),
+    setUserPlaceDetails,
+    createReview);
 
 
-// module.exports = router;
-//
-// const express = require('express');
-// const reviewController = require('../controllers/reviewController');
-//
-// const router = express.Router();
-//
-// router.route('/').get(getAllReviews);
-// router.route('/').post(createReview);
+router
+  .route('/:id')
+  .delete(deleteReview)
+  .patch(updateReview)
+  .get(getOneReview);
 
 module.exports = router;
