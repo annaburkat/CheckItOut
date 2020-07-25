@@ -1,0 +1,25 @@
+[{
+    "review": "Delicious food",
+    "rating": 8,
+    "place": "5f19e6a0c12a2213b083c007",
+    "user": "5c8a1f292f8fb814b56fa184"
+  },
+  {
+    "review": "Really good food",
+    "rating": 9,
+    "place": "5f19e6a0c12a2213b083c008",
+    "user": "5c8a20d32f8fb814b56fa187"
+  },
+  {
+    "review": "Terrible good coffee",
+    "rating": 2,
+    "place": "5f19e6a0c12a2213b083c00a",
+    "user": "5c8a23412f8fb814b56fa18c"
+  },
+  {
+    "review": "So so food",
+    "rating": 5,
+    "place": "5f1b8e082a934f160c78b161",
+    "user": "5c8a23c82f8fb814b56fa18d"
+  }
+]

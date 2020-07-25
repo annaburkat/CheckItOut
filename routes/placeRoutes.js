@@ -1,6 +1,4 @@
 const express = require('express');
-// const fs = require('fs');
-// const placeController = require('./../controllers/placeController.js');
 const reviewRouter = require('./reviewRoutes.js');
 
 const {
@@ -26,23 +24,38 @@ const router = express.Router();
 router.use('/:placeID/reviews', reviewRouter);
 
 router
-  .route('/top-five-cheap')
-  .get(aliasTopTours, getAllPlaces);
-
-router
-  .route('/place-stats')
-  .get(getPlaceStats);
-
-router
   .route('/')
-  .get(protectRoutes, getAllPlaces)
-  .post(createPlace);
+  .get(getAllPlaces)
+  .post(
+    protectRoutes,
+    restrictRoutes('admin', 'redactor'),
+    createPlace
+  );
 
 router
   .route('/:id')
   .get(getOnePlace)
-  .delete(protectRoutes, restrictRoutes('admin', 'redactor'), deletePlace)
-  .patch(updatePlace);
+  .delete(
+    protectRoutes,
+    restrictRoutes('admin', 'redactor'),
+    deletePlace
+  )
+  .patch(
+    protectRoutes,
+    restrictRoutes('admin', 'redactor'),
+    updatePlace
+  );
+
+router
+  .route('/top-five-cheap')
+  .get(
+    aliasTopTours,
+    getAllPlaces
+  );
+
+router
+  .route('/place-stats')
+  .get(getPlaceStats);
 
 
 module.exports = router;

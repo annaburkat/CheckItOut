@@ -49,9 +49,9 @@ const sendErrorProd = (err, res) => {
     });
   } else {
     //extrernal errors, random programic error
-    //log to concole for developer
+    //log to console for developer
     //add some library
-    console.error('Something went wrong ERROR!!!!!!!!!!!!!!!');
+    console.error('Something went wrong ERROR!');
 
     res.status(500).json({
       status: 'error',

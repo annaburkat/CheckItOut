@@ -1,29 +1,91 @@
 [{
-  "_id": "5c8a1d5b0190b214360dc057",
-  "name": "Jonas Schmedtmann",
-  "email": "admin@natours.io",
-  "role": "admin",
-  "active": true,
-  "photo": "user-1.jpg",
-  "password": "$2a$12$Q0grHjH9PXc6SxivC8m12.2mZJ9BbKcgFpwSG4Y1ZEII8HJVzWeyS"
-}, {
-  "_id": "5c8a1dfa2f8fb814b56fa181",
-  "name": "Lourdes Browning",
-  "email": "loulou@example.com",
-  "role": "user",
-  "active": true,
-  "photo": "user-2.jpg",
-  "password": "$2a$12$hP1h2pnNp7wgyZNRwPsOTeZuNzWBv7vHmsR3DT/OaPSUBQT.y0S.."
-}, {
-  "_id": "5c8a1e1a2f8fb814b56fa182",
-  "name": "Sophie Louise Hart",
-  "email": "sophie@example.com",
-  "role": "user",
-  "active": true,
-  "photo": "user-3.jpg",
-  "password": "$2a$12$9nFqToiTmjgfFVJiQvjmreLt4k8X4gGYCETGapSZOb2hHa55t0dDq"
-}, {
-  "id": null,
-  "name": "Ania",
-  "email": "ankaburkat@gmail.com"
-}]
+    "_id": "5c8a1d5b0190b214360dc057",
+    "name": "Anna Burkat",
+    "email": "annaburkat@checkitout.io",
+    "role": "admin",
+    "active": true,
+    "photo": "user-1.jpg",
+    "password": "$2a$12$Q0grHjH9PXc6SxivC8m12.2mZJ9BbKcgFpwSG4Y1ZEII8HJVzWeyS"
+  },
+  {
+    "_id": "5c8a22c62f8fb814b56fa18b",
+    "name": "Sonia Smith",
+    "email": "soniasmith@example.com",
+    "role": "redactor",
+    "active": true,
+    "photo": "user-12.jpg",
+    "password": "$2a$12$.XIvvmznHQSa9UOI639yhe4vzHKCYO1vpTUZc4d45oiT4GOZQe1kS"
+  },
+  {
+    "_id": "5c8a1dfa2f8fb814b56fa181",
+    "name": "Tom Hanks",
+    "email": "tomhanks@gmail.com",
+    "role": "user",
+    "active": true,
+    "photo": "user-2.jpg",
+    "password": "$2a$12$hP1h2pnNp7wgyZNRwPsOTeZuNzWBv7vHmsR3DT/OaPSUBQT.y0S.."
+  },
+  {
+    "_id": "5c8a1e1a2f8fb814b56fa182",
+    "name": "Marry Sart",
+    "email": "mariesart@gmail.com",
+    "role": "user",
+    "active": true,
+    "photo": "user-3.jpg",
+    "password": "$2a$12$9nFqToiTmjgfFVJiQvjmreLt4k8X4gGYCETGapSZOb2hHa55t0dDq"
+  },
+  {
+    "_id": "5c8a1ec62f8fb814b56fa183",
+    "name": "Ellen Conter",
+    "email": "ellen@conter.com",
+    "role": "user",
+    "active": true,
+    "photo": "user-4.jpg",
+    "password": "$2a$12$tm33.M/4pfEbZF64WbFuHuVFv85v4qEhi.ik8njbud7yaoqCZpjiy"
+  },
+  {
+    "_id": "5c8a1f292f8fb814b56fa184",
+    "name": "Sam Amos",
+    "email": "samamos@gmail.com",
+    "role": "user",
+    "active": true,
+    "photo": "user-5.jpg",
+    "password": "$2a$12$OOPr90tBEBF1Iho3ox0Jde0O/WXUR0VLA5xdh6tWcu7qb.qOCvSg2"
+  },
+  {
+    "_id": "5c8a201e2f8fb814b56fa186",
+    "name": "Kate Hals",
+    "email": "kaste.hals@example.com",
+    "role": "user",
+    "active": true,
+    "photo": "user-7.jpg",
+    "password": "$2a$12$II1F3aBSFDF3Xz7iB4rk/.a2dogwkClMN5gGCWrRlILrG1xtJG7q6"
+  },
+  {
+    "_id": "5c8a20d32f8fb814b56fa187",
+    "name": "Eliana Popins",
+    "email": "eliana@popins.com",
+    "role": "user",
+    "active": true,
+    "photo": "user-8.jpg",
+    "password": "$2a$12$Jb/ILhdDV.ZpnPMu19xfe.NRh5ntE2LzNMNcsty05QWwRbmFFVMKO"
+  },
+  {
+    "_id": "5c8a23412f8fb814b56fa18c",
+    "name": "Ben Bin",
+    "email": "ben@bin.com",
+    "role": "user",
+    "active": true,
+    "photo": "user-13.jpg",
+    "password": "$2a$12$D3fyuS9ETdBBw5lOwceTMuZcDTyVq28ieeGUAanIuLMcSDz6bpfIe"
+  },
+  {
+    "_id": "5c8a23c82f8fb814b56fa18d",
+    "name": "Marta Skot",
+    "email": "marta@skot.com",
+    "role": "user",
+    "active": true,
+    "photo": "user-14.jpg",
+    "password": "$2a$12$VPYaAAOsI44uhq11WbZ5R.cHT4.fGdlI9gKJd95jmYw3.sAsmbvBq"
+  }
+]

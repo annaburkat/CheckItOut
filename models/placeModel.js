@@ -113,11 +113,16 @@ const placeSchema = new mongoose.Schema({
   }
 );
 
+
+//INDEXING
+placeSchema.index({slug:1});
+
 //when you want to have something in schema, which is coming from calculation like changing km to cm 103
 // //count duration in weeks
 // placeSchema.virtual('durationWeeks').get(function(){
 //   return this.duration/7;
 // });
+
 
 //Virtual populate Place with Review
 placeSchema.virtual('reviews', {
@@ -146,7 +151,6 @@ placeSchema.pre('save', function(next) {
 // });
 
 //QUERY MIDDLEWARE
-//what shoould happen before
 // placeSchema.pre(/^find/, function(next) {
 placeSchema.pre('find', function(next) {
   //this = current query

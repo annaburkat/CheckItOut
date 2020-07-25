@@ -20,18 +20,24 @@ const router = express.Router({
 
 router
   .route('/')
-  .get(protectRoutes, getAllReviews)
+  .get(getAllReviews)
   .post(
     protectRoutes,
     restrictRoutes('user'),
     setUserPlaceDetails,
-    createReview);
-
+    createReview
+  );
 
 router
   .route('/:id')
-  .delete(deleteReview)
-  .patch(updateReview)
+  .delete(
+    protectRoutes,
+    deleteReview
+  )
+  .patch(
+    protectRoutes,
+    updateReview
+  )
   .get(getOneReview);
 
 module.exports = router;

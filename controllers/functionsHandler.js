@@ -81,7 +81,6 @@ exports.getAll = (Model) => catchAsync(async (req, res, next) => {
     .paginating();
 
   const document = await features.query;
-  // const places = await finalQuery;
 
   //send response
   res.status(200).json({

@@ -7,7 +7,8 @@ const {
   getOneUser,
   updateUser,
   updateLoggedInUser,
-  deleteLoggedUser
+  deleteLoggedUser,
+  getMe
 } = require('./../controllers/userController.js');
 
 const {
@@ -16,7 +17,8 @@ const {
   resetPassword,
   forgotPassword,
   changePassword,
-  protectRoutes
+  protectRoutes,
+  restrictRoutes
 } = require('./../controllers/authenticationController.js');
 
 
@@ -26,28 +28,42 @@ router
   .post('/signup', signUp);
 router
   .post('/login', logIn);
-
 router
   .post('/forgotPassword', forgotPassword);
 router
   .patch('/resetPassword/:token', resetPassword);
+
+
+//Protect All routes below
+router.use(protectRoutes);
+
 router
-  .patch('/changePassword', protectRoutes, changePassword);
+  .patch('/changePassword', changePassword);
 router
-  .patch('/updateProfile', protectRoutes, updateLoggedInUser);
+  .patch('/updateProfile', updateLoggedInUser);
 router
-  .delete('/deleteProfile', protectRoutes, deleteLoggedUser);
+  .delete('/deleteProfile', deleteLoggedUser);
+router
+  .get('/me', getMe, getOneUser);
 
 router
   .route('/')
   .get(getAllUsers)
-  .post(addNewUser);
+  .post(
+    restrictRoutes('admin', 'redactor'),
+    addNewUser
+  );
 
 router
   .route('/:id')
   .get(getOneUser)
-  .delete(deleteLoggedUser)
-  .patch(updateUser);
-
+  .delete(
+    restrictRoutes('admin', 'redactor'),
+    deleteLoggedUser
+  )
+  .patch(
+    restrictRoutes('admin', 'redactor'),
+    updateUser
+  );
 
 module.exports = router;
