@@ -16,22 +16,25 @@ const placeSchema = new mongoose.Schema({
       type: String,
       required: [true, "Please enter category"],
       enum: {
-        values: ['cinema', 'cafe', 'shop', 'restaurant', 'museum'],
+        values: ['cinema', 'cafe', 'pub', 'restaurant', 'museum', 'outdoor'],
         messages: 'You can add only: cinema, cafe, shop, restaurant, museum.'
       }
     },
-    location: {
-      //GeoJson
-      type: {
-        type: String,
-        default: 'Point',
-        enum: ['Point']
-      },
-      coordinates: [Number],
-      address: String,
-      city: String,
-      country: String
-    },
+    // location: {
+    //   //GeoJson
+    //   type: {
+    //     type: String,
+    //     default: 'Point',
+    //     enum: ['Point']
+    //   },
+    //   coordinates: [Number],
+    //   address: String,
+    //   city: String,
+    //   country: String
+    // },
+    address: String,
+    city: String,
+    country: String,
     description: {
       type: String,
       trim: true
@@ -59,7 +62,8 @@ const placeSchema = new mongoose.Schema({
       type: Number,
       default: 5,
       min: [1, 'Rating must be above 1 or equal'],
-      max: [10, 'Rating must be below or equal 10']
+      max: [10, 'Rating must be below or equal 10'],
+      set: val => Math.round(val)
     },
     ratingsQuantity: {
       type: Number,
@@ -115,7 +119,9 @@ const placeSchema = new mongoose.Schema({
 
 
 //INDEXING
-placeSchema.index({slug:1});
+placeSchema.index({
+  slug: 1
+});
 
 //when you want to have something in schema, which is coming from calculation like changing km to cm 103
 // //count duration in weeks

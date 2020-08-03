@@ -1,12 +1,13 @@
 const util = require('util');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const sendEmail = require('./../utils/email');
 
-const generateJwtToken = (id) => {
+const generateToken = (id) => {
   return jwt.sign({
     id: id
   }, process.env.JWT_SECRET, {
@@ -15,25 +16,26 @@ const generateJwtToken = (id) => {
 };
 
 const createAndSendToken = (user, statusCode, res) => {
-  const jwtToken = generateJwtToken(user._id);
+  const token = generateToken(user._id);
   const cookieOptions =  {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRATION * 24 * 3600000),
-    httpOnly: true
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRATION * 24 * 3600000)
   };
 
   if(process.env.NODE_ENV === "production") {
     cookieOptions.secure = true;
   };
 
+// console.log('jwtToken', jwtToken);
+res.cookie('jwt', token, cookieOptions);
+
 //remove password from output
 user.password = undefined;
 
-  res.cookie('jwtToken', jwtToken, cookieOptions);
 
   //send response
   res.status(statusCode).json({
     status: 'success',
-    jwtToken,
+    token,
     data: {
       user: user
     }
@@ -43,6 +45,7 @@ user.password = undefined;
 
 //signiup and automatically log in user
 exports.signUp = catchAsync(async (req, res, next) => {
+  console.log(req.body);
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -54,7 +57,6 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
   createAndSendToken(newUser, 201, res);
 });
-
 
 exports.logIn = catchAsync(async (req, res, next) => {
   const {
@@ -75,11 +77,16 @@ exports.logIn = catchAsync(async (req, res, next) => {
     email: email
   }).select('+password');
 
-  //correctPassword define in userModel
-  const isPasswordCorrect = user ? await user.correctPassword(password, user.password) : null;
 
-  if (!user || !isPasswordCorrect) {
-    return next(new AppError('Incorrect email or password', 401))
+  //correctPassword define in userModel
+  // const isPasswordCorrect = user ? await user.correctPassword(password, user.password) : null;
+  //
+  // if (!user || !isPasswordCorrect) {
+  //   return next(new AppError('Incorrect email or password', 401))
+  // }
+
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError('Incorrect email or password', 401));
   }
 
   //Check if everything is ok, send token to client
@@ -87,16 +94,27 @@ exports.logIn = catchAsync(async (req, res, next) => {
 });
 
 
+exports.logOut = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+  res.status(200).json({ status: 'success' });
+};
+
 //protect Routes so only logged in users can access them (might change name for this function)
 exports.protectRoutes = catchAsync(async (req, res, next) => {
+  console.log('aa', req.cookies.jwt, req.method);
   //1 Get jwtToken and check if exists
-  let jwtToken;
+  let token;
+  console.log('req.headers', req.headers)
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    jwtToken = req.headers.authorization.split(' ')[1];
-    console.log('jwtToken', jwtToken);
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
-  if (!jwtToken) {
+  if (!token) {
     return next(new AppError('You are not logged in. Log in to get access.', 401));
   }
 
@@ -105,7 +123,7 @@ exports.protectRoutes = catchAsync(async (req, res, next) => {
   //and then it will call back function
   //we promisify this functi on
   //check if code wasn't manipulated
-  const decoded = await util.promisify(jwt.verify)(jwtToken, process.env.JWT_SECRET);
+  const decoded = await util.promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   //3 Check if user exists - if user wasn't deleted meanwhile
   const userNow = await User.findById(decoded.id);
@@ -124,7 +142,6 @@ exports.protectRoutes = catchAsync(async (req, res, next) => {
   next();
 });
 
-
 exports.restrictRoutes = (...roles) => {
   return (req, res, next) => {
     //roles is an array
@@ -135,7 +152,6 @@ exports.restrictRoutes = (...roles) => {
     next();
   }
 };
-
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   //I. Get user based on email
@@ -184,7 +200,6 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   };
 });
 
-
 exports.resetPassword = catchAsync(async (req, res, next) => {
   //I. Get user based on Token
   //twice the same code, might refactor to own funciton
@@ -213,7 +228,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   //IV. Log user in
   createAndSendToken(user, 200, res);
 });
-
 
 exports.changePassword = catchAsync(async (req, res, next) => {
   //I. Get user from db

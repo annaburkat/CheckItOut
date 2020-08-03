@@ -25,10 +25,12 @@ router.use('/:placeID/reviews', reviewRouter);
 
 router
   .route('/')
-  .get(getAllPlaces)
+  .get(
+    protectRoutes,
+    getAllPlaces
+  )
   .post(
     protectRoutes,
-    restrictRoutes('admin', 'redactor'),
     createPlace
   );
 

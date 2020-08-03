@@ -83,11 +83,5 @@ exports.getAll = (Model) => catchAsync(async (req, res, next) => {
   const document = await features.query;
 
   //send response
-  res.status(200).json({
-    status: 'success',
-    results: document.length,
-    data: {
-      data: document
-    }
-  });
+  res.status(200).json(document);
 });

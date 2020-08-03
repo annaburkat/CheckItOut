@@ -5,6 +5,9 @@ const helmet = require('helmet');
 const sanitize = require('express-mongo-sanitize');
 const expAutoSan = require('express-autosanitizer');
 const hpp = require('hpp');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
 // const winston = require('winston');
 //winston
 // https://github.com/jstevenperry/IBM-Developer/tree/master/Node.js/Course/Unit-10
@@ -16,10 +19,17 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
+app.use(cors({ credentials: true }));
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 //Global middlware
 //Set additional security HTTP headers
-app.use(helmet());
+// app
+//   .use(helmet());
 
 
 // Middlwares - middlware is a function which can modify incoming request data
@@ -42,6 +52,7 @@ if (process.env.NODE_ENV !== 'development') {
 app.use(express.json({
   limit: '20kb'
 }));
+app.use(cookieParser());
 
 //SANITAZATION
 //Data sanitazation against NoSQL injection
@@ -54,7 +65,7 @@ app.use(expAutoSan.allUnsafe);
 
 //Prevent parameter pollution
 app.use(hpp({
-  whitelist:  ['ratingsAverage', 'averagePrice', 'likes', 'category', 'country', 'city']
+  whitelist: ['ratingsAverage', 'averagePrice', 'likes', 'category', 'country', 'city']
 }));
 
 //Serving static files

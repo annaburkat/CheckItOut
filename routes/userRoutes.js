@@ -44,7 +44,7 @@ router
 router
   .delete('/deleteProfile', deleteLoggedUser);
 router
-  .get('/me', getMe, getOneUser);
+  .get('/profile', getMe, getOneUser);
 
 router
   .route('/')
