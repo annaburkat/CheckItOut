@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
-// const User = require('./userModel');
 
 const placeSchema = new mongoose.Schema({
     name: {
@@ -10,7 +9,6 @@ const placeSchema = new mongoose.Schema({
       unique: true,
       maxlength: [100, 'The name is too long - it should be shorter or equal 100 characters but not shorter than one character'],
       minlength: [1, 'The name is too short - it should be longer or equal 1 character but not longer than 100 characters']
-      // validate: [validator.isAlpha, 'Place name should only contains characters']
     },
     category: {
       type: String,
@@ -25,7 +23,9 @@ const placeSchema = new mongoose.Schema({
     country: String,
     description: {
       type: String,
-      trim: true
+      trim: true,
+      maxlength: [10, 'The name is too long - it should be shorter or equal 100 characters but not shorter than one character'],
+      minlength: [500, 'The name is too short - it should be longer or equal 1 character but not longer than 100 characters']
     },
     slug: String,
     contact: {
@@ -74,10 +74,6 @@ const placeSchema = new mongoose.Schema({
     imageCover: {
       type: String
     },
-    likes: {
-      type: Number
-    },
-    images: [String],
     createdAt: {
       type: Date,
       default: Date.now(),
@@ -87,7 +83,6 @@ const placeSchema = new mongoose.Schema({
       type: Boolean,
       default: false
     },
-    // redactors: Array
     redactors: [{
       type: mongoose.Schema.ObjectId,
       ref: 'User'
@@ -104,31 +99,19 @@ const placeSchema = new mongoose.Schema({
   }
 );
 
-
 //INDEXING
 placeSchema.index({
   slug: 1
 });
 
-//when you want to have something in schema, which is coming from calculation like changing km to cm 103
-// //count duration in weeks
-// placeSchema.virtual('durationWeeks').get(function(){
-//   return this.duration/7;
-// });
-
-
-//Virtual populate Place with Review
+//virtual populate Place with Review
 placeSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'place',
   localField: '_id'
 });
 
-//DOCUMENT Middlware/hook 104
-//It runs before save and create
-//middlware which will run before
 placeSchema.pre('save', function(next) {
-  //this = currently processed document
   this.slug = slugify(this.name, {
     lower: true
   });
@@ -144,9 +127,7 @@ placeSchema.pre('save', function(next) {
 // });
 
 //QUERY MIDDLEWARE
-// placeSchema.pre(/^find/, function(next) {
 placeSchema.pre('find', function(next) {
-  //this = current query
   this.find({
     secretPlace: {
       $ne: true
@@ -176,7 +157,6 @@ placeSchema.pre(/^find/, function(next) {
 
 //AGGREGATION middlware
 placeSchema.pre('aggregate', function(next) {
-  //this = current aggregation object
   //excluding places filter in aggregation
   this.pipeline().unshift({
     $match: {

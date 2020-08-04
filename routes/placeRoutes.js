@@ -24,35 +24,36 @@ const router = express.Router();
 router.use('/:placeID/reviews', reviewRouter);
 
 router
+  .route('/top-six')
+  .get(
+    aliasTopTours,
+    getAllPlaces
+  );
+
+router
   .route('/')
   .get(
     protectRoutes,
     getAllPlaces
   )
   .post(
-    protectRoutes,
     createPlace
   );
 
+
 router
   .route('/:id')
-  .get(getOnePlace)
+  .get(
+    protectRoutes,
+    getOnePlace
+  )
   .delete(
     protectRoutes,
     restrictRoutes('admin', 'redactor'),
     deletePlace
   )
   .patch(
-    protectRoutes,
-    restrictRoutes('admin', 'redactor'),
     updatePlace
-  );
-
-router
-  .route('/top-five-cheap')
-  .get(
-    aliasTopTours,
-    getAllPlaces
   );
 
 router
