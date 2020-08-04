@@ -20,18 +20,6 @@ const placeSchema = new mongoose.Schema({
         messages: 'You can add only: cinema, cafe, shop, restaurant, museum.'
       }
     },
-    // location: {
-    //   //GeoJson
-    //   type: {
-    //     type: String,
-    //     default: 'Point',
-    //     enum: ['Point']
-    //   },
-    //   coordinates: [Number],
-    //   address: String,
-    //   city: String,
-    //   country: String
-    // },
     address: String,
     city: String,
     country: String,
@@ -84,8 +72,7 @@ const placeSchema = new mongoose.Schema({
       default: false
     },
     imageCover: {
-      type: String,
-      required: [true, "Place should have an image"]
+      type: String
     },
     likes: {
       type: Number
