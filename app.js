@@ -23,16 +23,17 @@ app.use(cors({ credentials: true }));
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Methods", ["PUT", "DELETE", "GET", "PATCH", "PUT"]);
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  req.header("Access-Control-Allow-Credentials", true);
   next();
 });
-//Global middlware
-//Set additional security HTTP headers
-// app
-//   .use(helmet());
 
+//Global middlwares
+//additional security HTTP headers
+app
+  .use(helmet());
 
-// Middlwares - middlware is a function which can modify incoming request data
 //Development login
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -56,26 +57,24 @@ app.use(cookieParser());
 
 //SANITAZATION
 //Data sanitazation against NoSQL injection
-//protect us from queries with $ signs and similar
 app.use(sanitize());
 
 //Data sanitazation against XSS
-// //malicious html & js code
 app.use(expAutoSan.allUnsafe);
 
 //Prevent parameter pollution
 app.use(hpp({
-  whitelist: ['ratingsAverage', 'averagePrice', 'likes', 'category', 'country', 'city']
+  whitelist: ['ratingsAverage', 'averagePrice', 'category', 'country', 'city']
 }));
 
 //Serving static files
 app.use(express.static(`${__dirname}/public`));
 
 //Test middlware
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  next();
-});
+// app.use((req, res, next) => {
+//   req.requestTime = new Date().toISOString();
+//   next();
+// });
 
 // Routes - mounting routers
 app.use('/api/v1/places', placeRouter);

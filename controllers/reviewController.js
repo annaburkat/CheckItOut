@@ -2,7 +2,6 @@ const Review = require('../models/reviewModel');
 const functionsHandler = require('./functionsHandler');
 
 exports.setUserPlaceDetails = (req, res, next) => {
-  //nested routs: place + user
   if (!req.body.place) {
     req.body.place = req.params.placeID;
   };

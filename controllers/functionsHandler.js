@@ -65,7 +65,6 @@ exports.getOne = (Model, populateOptions) => catchAsync(async (req, res, next) =
 });
 
 exports.getAll = (Model) => catchAsync(async (req, res, next) => {
-  //To allowed for nested GET reviews of place
   let filter = {};
 
   if (req.params.placeID) {
