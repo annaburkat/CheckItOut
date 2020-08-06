@@ -10,7 +10,8 @@ const {
   validatePlaceID,
   validateNewPlaceBody,
   aliasTopTours,
-  getPlaceStats
+  getPlaceStats,
+  getCities
 } = require('./../controllers/placeController');
 
 const {
@@ -22,6 +23,12 @@ const {
 const router = express.Router();
 
 router.use('/:placeID/reviews', reviewRouter);
+
+router
+  .route('/getCities')
+  .get(
+    getCities
+  );
 
 router
   .route('/top-six')

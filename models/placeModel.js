@@ -6,9 +6,7 @@ const placeSchema = new mongoose.Schema({
     name: {
       type: String,
       required: [true, "Please enter a name"],
-      unique: true,
-      maxlength: [100, 'The name is too long - it should be shorter or equal 100 characters but not shorter than one character'],
-      minlength: [1, 'The name is too short - it should be longer or equal 1 character but not longer than 100 characters']
+      unique: true
     },
     category: {
       type: String,
@@ -67,10 +65,10 @@ const placeSchema = new mongoose.Schema({
     averagePrice: {
       type: Number
     },
-    kidFriendly: {
-      type: Boolean,
-      default: false
-    },
+    // kidFriendly: {
+    //   type: Boolean,
+    //   default: false
+    // },
     imageCover: {
       type: String
     },

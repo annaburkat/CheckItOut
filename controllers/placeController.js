@@ -12,9 +12,29 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
+//get all places
+exports.getCities = (req, res, next) => {
+  Place.find({}, 'city', function(error, allCities) {
+    const data = [];
+    for(let city of allCities){
+      if(!data.includes(city.city) && city.city !== null && city.city !== undefined){
+        data.push(city.city);
+      }
+    }
+    res.status(200).json({
+      status: 'success',
+      data
+    });
+  });
+  next();
+};
+
+
 //Places
 exports.getAllPlaces = functionsHandler.getAll(Place);
-exports.getOnePlace = functionsHandler.getOne(Place, {path: 'reviews'});
+exports.getOnePlace = functionsHandler.getOne(Place, {
+  path: 'reviews'
+});
 exports.createPlace = functionsHandler.createOne(Place);
 exports.updatePlace = functionsHandler.updateOne(Place);
 exports.deletePlace = functionsHandler.deleteOne(Place);

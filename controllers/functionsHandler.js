@@ -7,7 +7,7 @@ exports.deleteOne = (Model) => catchAsync(async (req, res, next) => {
 
   if (!document) {
     return next(new AppError('No document with that id', 404))
-  }
+  };
 
   res.status(204).json({
     status: 'success',
@@ -81,6 +81,5 @@ exports.getAll = (Model) => catchAsync(async (req, res, next) => {
 
   const document = await features.query;
 
-  //send response
   res.status(200).json(document);
 });
