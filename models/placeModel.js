@@ -17,13 +17,17 @@ const placeSchema = new mongoose.Schema({
       }
     },
     address: String,
-    city: String,
-    country: String,
+    city:  {
+      type: String,
+      required: [true, "Please enter city"]
+    },
+    country:   {
+      type: String,
+      required: [true, "Please enter country"]
+    },
     description: {
       type: String,
-      trim: true,
-      maxlength: [10, 'The name is too long - it should be shorter or equal 100 characters but not shorter than one character'],
-      minlength: [500, 'The name is too short - it should be longer or equal 1 character but not longer than 100 characters']
+      trim: true
     },
     slug: String,
     contact: {
@@ -65,12 +69,9 @@ const placeSchema = new mongoose.Schema({
     averagePrice: {
       type: Number
     },
-    // kidFriendly: {
-    //   type: Boolean,
-    //   default: false
-    // },
-    imageCover: {
-      type: String
+    imageCover:  {
+      type: String,
+      required: [true, "Please enter image"]
     },
     createdAt: {
       type: Date,
@@ -115,14 +116,6 @@ placeSchema.pre('save', function(next) {
   });
   next();
 });
-
-// //embeding REDACTORS
-// placeSchema.pre('save', async function(next) {
-//   //this = currently processed document
-//   const redactorPromises = this.redactors.map(async id=> await User.findById(id));
-//   this.redactors =  await Promise.all(redactorPromises);
-//   next();
-// });
 
 //QUERY MIDDLEWARE
 placeSchema.pre('find', function(next) {

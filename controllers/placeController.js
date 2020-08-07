@@ -26,7 +26,6 @@ exports.getCities = (req, res, next) => {
       data
     });
   });
-  next();
 };
 
 

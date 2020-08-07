@@ -25,12 +25,9 @@ const createAndSendToken = (user, statusCode, res) => {
     cookieOptions.secure = true;
   };
 
-// console.log('jwtToken', jwtToken);
 res.cookie('jwt', token, cookieOptions);
 
-//remove password from output
 user.password = undefined;
-
 
   //send response
   res.status(statusCode).json({
@@ -45,7 +42,6 @@ user.password = undefined;
 
 //signiup and automatically log in user
 exports.signUp = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -64,7 +60,6 @@ exports.logIn = catchAsync(async (req, res, next) => {
     password
   } = req.body;
 
-  //Check email, password - if exist
   if (!password) {
     return next(new AppError('Please provide password', 400))
   }
@@ -78,18 +73,10 @@ exports.logIn = catchAsync(async (req, res, next) => {
   }).select('+password');
 
 
-  //correctPassword define in userModel
-  // const isPasswordCorrect = user ? await user.correctPassword(password, user.password) : null;
-  //
-  // if (!user || !isPasswordCorrect) {
-  //   return next(new AppError('Incorrect email or password', 401))
-  // }
-
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
   }
 
-  //Check if everything is ok, send token to client
   createAndSendToken(user, 200, res);
 });
 
@@ -104,7 +91,7 @@ exports.logOut = (req, res) => {
 
 //protect Routes so only logged in users can access them (might change name for this function)
 exports.protectRoutes = catchAsync(async (req, res, next) => {
-  console.log('aa', req.cookies.jwt, req.method);
+  console.log('hi from protectRoutes')
   //1 Get jwtToken and check if exists
   let token;
   console.log('req.headers', req.headers)
@@ -119,10 +106,6 @@ exports.protectRoutes = catchAsync(async (req, res, next) => {
   }
 
   //2 Validate jwtToken
-  //verify is async function
-  //and then it will call back function
-  //we promisify this functi on
-  //check if code wasn't manipulated
   const decoded = await util.promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   //3 Check if user exists - if user wasn't deleted meanwhile
@@ -132,7 +115,6 @@ exports.protectRoutes = catchAsync(async (req, res, next) => {
   }
 
   //4 Check if user changed password after jwtToken was issued
-  //instance method
   if (userNow.changedPasswordAfter(decoded.iat)) {
     return next(new AppError(`Password changed recenlty, please log in again`, 401));
   };
@@ -172,7 +154,6 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
 
   //III. Send email to the user
-  //instant method
   const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
 
   const messageText = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
@@ -202,7 +183,6 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
   //I. Get user based on Token
-  //twice the same code, might refactor to own funciton
   const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
 
   const user = await User.findOne({

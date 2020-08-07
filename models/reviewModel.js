@@ -9,7 +9,8 @@ const reviewSchema = new mongoose.Schema({
   rating: {
     type: Number,
     min: [1, 'Rating must be above 1 or equal'],
-    max: [10, 'Rating must be below or equal 10']
+    max: [10, 'Rating must be below or equal 10'],
+    required: [true, "Please rate this place"]
   },
   createdAt: {
     type: Date,
@@ -38,13 +39,6 @@ const reviewSchema = new mongoose.Schema({
 reviewSchema.index({ place: 1, user: 1 }, { unique: true });
 
 reviewSchema.pre(/^find/, function(next) {
-  // this.populate({
-  //   path: 'place',
-  //   select: 'name'
-  // }).populate({
-  //   path: 'user',
-  //   select: 'name photo'
-  // });
   this.populate({
     path: 'user',
     select: 'name photo'
@@ -100,7 +94,6 @@ reviewSchema.pre(/^findOneAnd/, async function(next) {
 });
 
 reviewSchema.post(/^findOneAnd/, async function() {
-  // await this.findOne(); does NOT work here, query has already executed
   await this.r.constructor.calcAvgRatings(this.r.place);
 });
 

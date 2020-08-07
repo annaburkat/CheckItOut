@@ -25,14 +25,11 @@ exports.getMe = (req, res, next) => {
 
 //update logged in user as an user
 exports.updateLoggedInUser = catchAsync(async (req, res, next) => {
-  //I. Create an error if user tries to update password
   if (req.body.password || req.body.passwordConfirm) {
     return next(new AppError('Action forbiden! To change password go to www.checkitout.io/changePassword'));
   };
 
-  //II. Filter out not wanted elements
   const fillteredBody = filterObject(req.body, 'name', 'email');
-  //III. Update the user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, fillteredBody, {
     new: true,
     runValidators: true

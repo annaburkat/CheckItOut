@@ -2,6 +2,7 @@ const Review = require('../models/reviewModel');
 const functionsHandler = require('./functionsHandler');
 
 exports.setUserPlaceDetails = (req, res, next) => {
+  console.log('hi from setUserPlaceDetails')
   if (!req.body.place) {
     req.body.place = req.params.placeID;
   };

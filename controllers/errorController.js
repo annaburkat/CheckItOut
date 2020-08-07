@@ -49,8 +49,6 @@ const sendErrorProd = (err, res) => {
     });
   } else {
     //extrernal errors, random programic error
-    //log to console for developer
-    //add some library
     console.error('Something went wrong ERROR!');
 
     res.status(500).json({
@@ -61,14 +59,12 @@ const sendErrorProd = (err, res) => {
 };
 
 module.exports = (err, req, res, next) => {
-  // console.log(err.stack);
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
 
   //distinguish between dev and prod
   if (process.env.NODE_ENV === 'development') {
-    // console.log(err.name);
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
 

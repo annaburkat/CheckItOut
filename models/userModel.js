@@ -20,12 +20,10 @@ const userSchema = new mongoose.Schema({
   photo: {
     type: String
   },
-  //Implement password validation special characters etc
   password: {
     type: String,
     required: [true, 'Please enter a password'],
-    //change to something bigger later
-    minlength: 3,
+    minlength: 6,
     select: false
   },
   passwordConfirm: {
@@ -41,7 +39,7 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   role: {
     type: String,
-    enum: ['user', 'redactor', 'admin'],
+    enum: ['user', 'admin'],
     default: 'user'
   },
   passwordResetToken: String,
@@ -56,14 +54,12 @@ const userSchema = new mongoose.Schema({
 
 //encription password - middlware
 userSchema.pre('save', async function(next) {
-  //only if password was changed - in other cases it's not needed to encrypt again
   if (!this.isModified('password')) {
     return next();
   }
 
   //hashing password with cost 12
   this.password = await bcryptjs.hash(this.password, 12);
-  //after validation we don't need passwordConfirm
   this.passwordConfirm = undefined;
   next();
 });
@@ -75,17 +71,13 @@ userSchema.pre('save', function(next){
 
   this.passwordChangedAt = Date.now() - 2000;
   next();
-
 });
 
 userSchema.pre(/^find/, function(next){
-  // this points to the current query
-  //when someone is looking for user, show only those with active status
   this.find({active: true});
   next();
 });
 
-//instance method - is a method which will be available every
 userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
   return await bcryptjs.compare(candidatePassword, userPassword);
 };
@@ -93,24 +85,18 @@ userSchema.methods.correctPassword = async function(candidatePassword, userPassw
 userSchema.methods.changedPasswordAfter = function(JWTTimeStamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000);
-    // console.log(changedTimestamp, JWTTimeStamp);
     return JWTTimeStamp < changedTimestamp;
   }
 
-  //FALSE mean not changed password
   return false;
 };
 
 userSchema.methods.createPasswordResetToken = function() {
-
-  //using default package to create token
-  //we will send this token to send to user and it's like a password
   const resetToken = crypto.randomBytes(32).toString('hex');
 
   this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-  //adding extra time - for how long reset token will be valid
+  //adding extra time
   this.passwordResetExpires = Date.now() + 300000;
-  // console.log({resetToken},   this.passwordResetToken);
   return resetToken;
 };
 
