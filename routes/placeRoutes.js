@@ -44,9 +44,9 @@ router
     getAllPlaces
   )
   .post(
+    protectRoutes,
     createPlace
   );
-
 
 router
   .route('/:id')
@@ -56,7 +56,7 @@ router
   )
   .delete(
     protectRoutes,
-    restrictRoutes('admin', 'redactor'),
+    restrictRoutes('admin'),
     deletePlace
   )
   .patch(
