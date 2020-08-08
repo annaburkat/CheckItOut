@@ -16,7 +16,7 @@ const globalErrorHandler = require('./controllers/errorController');
 const placeRouter = require('./routes/placeRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
-const AppError = require('./utils/AppError');
+const AppError = require('./utils/AppErrorFirst');
 
 const app = express();
 app.use(cors({ credentials: true, origin: "http://localhost:3000"}));

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
+const AppError = require('./../utils/AppErrorFirst');
 const functionsHandler = require('./functionsHandler');
 
 const users = JSON.parse(
