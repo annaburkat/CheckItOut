@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Place = require('./../models/placeModel');
 const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/AppErrorFirst');
+const AppError = require('./../utils/appError');
 const functionsHandler = require('./functionsHandler');
 
 
