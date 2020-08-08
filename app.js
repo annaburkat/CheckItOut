@@ -69,12 +69,6 @@ app.use(hpp({
 //Serving static files
 app.use(express.static(`${__dirname}/public`));
 
-//Test middlware
-// app.use((req, res, next) => {
-//   req.requestTime = new Date().toISOString();
-//   next();
-// });
-
 // Routes - mounting routers
 app.use('/api/v1/places', placeRouter);
 app.use('/api/v1/users', userRouter);

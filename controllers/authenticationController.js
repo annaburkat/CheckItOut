@@ -39,7 +39,6 @@ user.password = undefined;
   });
 };
 
-
 //signiup and automatically log in user
 exports.signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
@@ -183,6 +182,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
   //I. Get user based on Token
+  console.log(req.params)
   const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
 
   const user = await User.findOne({

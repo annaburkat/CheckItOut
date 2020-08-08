@@ -29,8 +29,8 @@ const placeSchema = new mongoose.Schema({
       type: String,
       trim: true,
       required: [true, "Please enter short description"],
-      min: [1, 'Rating must be above 1 or equal'],
-      max: [10, 'Rating must be below or equal 10']
+      min: [1, 'Description must be above 1 or equal'],
+      max: [10, 'Description must be below or equal 10']
     },
     slug: String,
     contact: {
