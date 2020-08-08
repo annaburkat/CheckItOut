@@ -50,22 +50,10 @@ const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
 
-
-//alternative to: // .catch(err => console.log('ERROR DB'));
-// // https://nodejs.org/api/process.html#process_event_unhandledrejection
-// process.on('unhandledRejection', (reason, promise) => {
-//   console.log('Unhandled Rejection at:', promise, 'reason:', reason);
-//   // Application specific logging, throwing an error, or other logic here
-// server.close(() => {
-//   process.exit(1);
-// });
-// });
-
 process.on('unhandledRejection', (err) => {
 
   console.log(err.message, err.name);
   console.log('Application will crush really soon. Bye!');
-  // Application specific logging, throwing an error, or other logic here
 
   process.exit(1);
 
