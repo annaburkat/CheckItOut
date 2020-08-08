@@ -12,7 +12,7 @@ const cookieParser = require('cookie-parser');
 //winston
 // https://github.com/jstevenperry/IBM-Developer/tree/master/Node.js/Course/Unit-10
 
-const AppError = require('./utils/AppError');
+const AppError = require('/utils/AppError');
 const globalErrorHandler = require('./controllers/errorController');
 const placeRouter = require('./routes/placeRoutes');
 const userRouter = require('./routes/userRoutes');
