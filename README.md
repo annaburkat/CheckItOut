@@ -1,4 +1,4 @@
-# CheckItOut - ExpressJS Application
+# CheckItOut - ExpressJS/NodeJS Application
 
 ### Clone the repository
 
